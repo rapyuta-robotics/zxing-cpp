@@ -1,8 +1,8 @@
 /*
- * Copyright 2016 Nu-book Inc.
- * Copyright 2016 ZXing authors
- * Copyright 2020 Axel Waggershauser
- */
+* Copyright 2016 Nu-book Inc.
+* Copyright 2016 ZXing authors
+* Copyright 2020 Axel Waggershauser
+*/
 // SPDX-License-Identifier: Apache-2.0
 
 #pragma once
@@ -10,10 +10,10 @@
 #include "BarcodeFormat.h"
 #include "ByteArray.h"
 #include "Content.h"
+#include "ReaderOptions.h"
 #include "Error.h"
 #include "ImageView.h"
 #include "Quadrilateral.h"
-#include "ReaderOptions.h"
 #include "StructuredAppend.h"
 #include "qrcode/QRCodecMode.h"
 
@@ -23,12 +23,12 @@ namespace ZXing {
 class BitMatrix;
 
 namespace BarcodeExtra {
-#define ZX_EXTRA(NAME) static constexpr auto NAME = #NAME
-ZX_EXTRA(DataMask); // QRCodes
-ZX_EXTRA(Version);
-ZX_EXTRA(EanAddOn); // EAN/UPC
-ZX_EXTRA(UPCE);
-#undef ZX_EXTRA
+	#define ZX_EXTRA(NAME) static constexpr auto NAME = #NAME
+	ZX_EXTRA(DataMask); // QRCodes
+	ZX_EXTRA(Version);
+	ZX_EXTRA(EanAddOn); // EAN/UPC
+	ZX_EXTRA(UPCE);
+	#undef ZX_EXTRA
 } // namespace BarcodeExtra
 
 } // namespace ZXing
@@ -200,11 +200,7 @@ public:
 	ImageView symbol() const;
 	void zint(unique_zint_symbol&& z);
 	zint_symbol* zint() const { return _zint.get(); }
-	Result&& addExtra(std::string&& json)
-	{
-		_json += std::move(json);
-		return std::move(*this);
-	}
+	Result&& addExtra(std::string&& json) { _json += std::move(json); return std::move(*this); }
 	// template<typename T>
 	// Result&& addExtra(std::string_view key, T val, T ignore = {}) { _json += JsonProp(key, val, ignore); return std::move(*this); }
 	std::string extra(std::string_view key = "") const;
