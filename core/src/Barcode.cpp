@@ -1,7 +1,7 @@
 /*
-* Copyright 2016 Nu-book Inc.
-* Copyright 2016 ZXing authors
-*/
+ * Copyright 2016 Nu-book Inc.
+ * Copyright 2016 ZXing authors
+ */
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Barcode.h"
@@ -10,6 +10,8 @@
 #include "DetectorResult.h"
 #include "JSON.h"
 #include "ZXAlgorithms.h"
+
+#include <iostream> //TODO remove this
 
 #ifdef ZXING_EXPERIMENTAL_API
 #include "BitMatrix.h"
@@ -21,7 +23,9 @@ void zint_symbol_deleter::operator()(zint_symbol* p) const noexcept
 	ZBarcode_Delete(p);
 }
 #else
-struct zint_symbol {};
+struct zint_symbol
+{
+};
 void zint_symbol_deleter::operator()(zint_symbol*) const noexcept {}
 #endif
 
@@ -34,12 +38,9 @@ void zint_symbol_deleter::operator()(zint_symbol*) const noexcept {}
 
 namespace ZXing {
 
-Result::Result(const std::string& text, int y, int xStart, int xStop, BarcodeFormat format, SymbologyIdentifier si, Error error, bool readerInit)
-	: _content({ByteArray(text)}, si),
-	  _error(error),
-	  _position(Line(y, xStart, xStop)),
-	  _format(format),
-	  _readerInit(readerInit)
+Result::Result(const std::string& text, int y, int xStart, int xStop, BarcodeFormat format, SymbologyIdentifier si, Error error,
+			   bool readerInit)
+	: _content({ByteArray(text)}, si), _error(error), _position(Line(y, xStart, xStop)), _format(format), _readerInit(readerInit)
 {}
 
 Result::Result(DecoderResult&& decodeResult, DetectorResult&& detectorResult, BarcodeFormat format)
@@ -52,8 +53,9 @@ Result::Result(DecoderResult&& decodeResult, DetectorResult&& detectorResult, Ba
 	  _isMirrored(decodeResult.isMirrored()),
 	  _readerInit(decodeResult.readerInit())
 #ifdef ZXING_EXPERIMENTAL_API
-	  , _symbol(std::make_shared<BitMatrix>(std::move(detectorResult).bits()))
-	  , _json(std::move(decodeResult).json())
+	  ,
+	  _symbol(std::make_shared<BitMatrix>(std::move(detectorResult).bits())),
+	  _json(std::move(decodeResult).json())
 #endif
 {
 	if (decodeResult.versionNumber())
@@ -138,6 +140,16 @@ std::string Result::version() const
 	return _version;
 }
 
+std::string Result::encoding() const
+{
+	return ToString(_content.encoding());
+}
+
+QRCode::CodecMode Result::primaryCodecMode() const
+{
+	return _content.primaryCodecMode();
+}
+
 Result& Result::setReaderOptions(const ReaderOptions& opts)
 {
 	if (opts.characterSet() != CharacterSet::Unknown)
@@ -179,7 +191,9 @@ std::string Result::extra(std::string_view key) const
 		res.back() = '}';
 		return res;
 	}
-	return _json.empty() ? "" : key.empty() ? StrCat("{", _json.substr(0, _json.size() - 1), "}") : std::string(JsonGetStr(_json, key));
+	return _json.empty() ? ""
+		   : key.empty() ? StrCat("{", _json.substr(0, _json.size() - 1), "}")
+						 : std::string(JsonGetStr(_json, key));
 }
 #endif
 
@@ -240,9 +254,9 @@ Barcode MergeStructuredAppendSequence(const Barcodes& barcodes)
 	res._position = {};
 	res._sai.index = -1;
 
-	if (allBarcodes.back().sequenceSize() != Size(allBarcodes) ||
-		!std::all_of(allBarcodes.begin(), allBarcodes.end(),
-					 [&](Barcode& it) { return it.sequenceId() == allBarcodes.front().sequenceId(); }))
+	if (allBarcodes.back().sequenceSize() != Size(allBarcodes)
+		|| !std::all_of(allBarcodes.begin(), allBarcodes.end(),
+						[&](Barcode& it) { return it.sequenceId() == allBarcodes.front().sequenceId(); }))
 		res._error = FormatError("sequenceIDs not matching during structured append sequence merging");
 
 	return res;

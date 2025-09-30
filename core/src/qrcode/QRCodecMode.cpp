@@ -92,4 +92,21 @@ int TerminatorBitsLength(const Version& version)
 	return version.isMicro() ? version.versionNumber() * 2 + 1 : 4 - version.isRMQR();
 }
 
+const char* ToString(CodecMode mode)
+{
+	switch (mode) {
+		case CodecMode::TERMINATOR:           return "Terminator";
+		case CodecMode::NUMERIC:              return "Numeric";
+		case CodecMode::ALPHANUMERIC:         return "Alphanumeric";
+		case CodecMode::STRUCTURED_APPEND:    return "Structured_Append";
+		case CodecMode::BYTE:                 return "Byte";
+		case CodecMode::FNC1_FIRST_POSITION:  return "FNC1_First";
+		case CodecMode::ECI:                  return "ECI";
+		case CodecMode::KANJI:                return "Kanji";
+		case CodecMode::FNC1_SECOND_POSITION: return "FNC1_Second";
+		case CodecMode::HANZI:                return "Hanzi";
+		default:                              return "Unknown";
+	}
+}
+
 } // namespace ZXing::QRCode

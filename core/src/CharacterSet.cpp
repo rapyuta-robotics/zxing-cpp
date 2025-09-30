@@ -84,8 +84,14 @@ CharacterSet CharacterSetFromString(std::string_view name)
 
 std::string ToString(CharacterSet cs)
 {
+	// Handle special cases
+	if (cs == CharacterSet::Unknown)
+		return "Unknown";
+	if (cs == CharacterSet::BINARY)
+		return "Binary";
+		
 	auto i = FindIf(NAME_TO_CHARSET, [cs](auto& v) { return v.cs == cs; });
-	return i == std::end(NAME_TO_CHARSET) ? "" : std::string(i->name);
+	return i == std::end(NAME_TO_CHARSET) ? "Unrecognized" : std::string(i->name);
 }
 
 } // namespace ZXing

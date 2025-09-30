@@ -1,6 +1,6 @@
 /*
-* Copyright 2022 Axel Waggershauser
-*/
+ * Copyright 2022 Axel Waggershauser
+ */
 // SPDX-License-Identifier: Apache-2.0
 
 #pragma once
@@ -18,8 +18,25 @@ namespace ZXing {
 
 enum class ECI : int;
 
-enum class ContentType { Text, Binary, Mixed, GS1, ISO15434, UnknownECI };
-enum class AIFlag : char { None, GS1, AIM };
+namespace QRCode {
+enum class CodecMode;
+}
+
+enum class ContentType
+{
+	Text,
+	Binary,
+	Mixed,
+	GS1,
+	ISO15434,
+	UnknownECI
+};
+enum class AIFlag : char
+{
+	None,
+	GS1,
+	AIM
+};
 
 std::string ToString(ContentType type);
 
@@ -55,12 +72,17 @@ public:
 	SymbologyIdentifier symbology;
 	CharacterSet defaultCharset = CharacterSet::Unknown;
 	bool hasECI = false;
+	std::vector<QRCode::CodecMode> codecModes; // Store QR codec modes
 
 	Content();
 	Content(ByteArray&& bytes, SymbologyIdentifier si);
 
 	void switchEncoding(ECI eci) { switchEncoding(eci, true); }
 	void switchEncoding(CharacterSet cs);
+
+	void addCodecMode(QRCode::CodecMode mode); // Add a codec mode
+	QRCode::CodecMode primaryCodecMode() const; // Get the primary/most significant codec mode
+	const std::vector<QRCode::CodecMode>& getCodecModes() const { return codecModes; } // Get all codec modes
 
 	void reserve(int count) { bytes.reserve(bytes.size() + count); }
 
@@ -81,8 +103,9 @@ public:
 	std::string utf8() const { return render(false); }
 
 	ByteArray bytesECI() const;
+	CharacterSet encoding() const;
 	CharacterSet guessEncoding() const;
 	ContentType type() const;
 };
 
-} // ZXing
+} // namespace ZXing

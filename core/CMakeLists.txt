@@ -513,6 +513,15 @@ target_compile_options (ZXing
 
 target_compile_features(ZXing PUBLIC cxx_std_17)
 
+# Add preprocessor definitions for feature flags
+target_compile_definitions(ZXing PUBLIC
+    $<$<BOOL:${ZXING_READERS}>:ZXING_READERS>
+    $<$<BOOL:${ZXING_WRITERS}>:ZXING_WRITERS>
+    $<$<BOOL:${ZXING_WRITERS_OLD}>:ZXING_WRITERS_OLD>
+    $<$<BOOL:${ZXING_WRITERS_NEW}>:ZXING_WRITERS_NEW>
+    $<$<BOOL:${ZXING_EXPERIMENTAL_API}>:ZXING_EXPERIMENTAL_API>
+)
+
 target_link_libraries (ZXing PRIVATE Threads::Threads)
 
 if (ZXING_READERS OR ZXING_WRITERS_OLD)

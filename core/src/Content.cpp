@@ -1,6 +1,6 @@
 /*
  * Copyright 2022 Axel Waggershauser
-*/
+ */
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Content.h"
@@ -11,6 +11,9 @@
 #include "TextDecoder.h"
 #include "Utf.h"
 #include "ZXAlgorithms.h"
+#include "qrcode/QRCodecMode.h"
+
+#include <iostream> //TODO remove this
 
 #if !defined(ZXING_READERS) && !defined(ZXING_WRITERS)
 #include "Version.h"
@@ -139,7 +142,7 @@ std::string Content::render(bool withECI) const
 
 	return res;
 #else
-	//TODO: replace by proper construction from encoded data from within zint
+	// TODO: replace by proper construction from encoded data from within zint
 	return std::string(bytes.asString());
 #endif
 }
@@ -224,7 +227,7 @@ CharacterSet Content::guessEncoding() const
 
 ContentType Content::type() const
 {
-#if 1 //def ZXING_READERS
+#if 1 // def ZXING_READERS
 	if (empty())
 		return ContentType::Text;
 
@@ -256,9 +259,65 @@ ContentType Content::type() const
 
 	return ContentType::Mixed;
 #else
-	//TODO: replace by proper construction from encoded data from within zint
+	// TODO: replace by proper construction from encoded data from within zint
 	return ContentType::Text;
 #endif
+}
+
+CharacterSet Content::encoding() const
+{
+#ifdef ZXING_READERS
+	// If we have ECI encodings defined, prefer using them
+	if (!encodings.empty()) {
+		// Check if we have any non-unknown ECI encodings
+		for (const auto& enc : encodings) {
+			if (enc.eci != ECI::Unknown) {
+				auto charset = ToCharacterSet(enc.eci);
+				std::cout << "encoding(): Using defined ECI encoding: " << static_cast<int>(enc.eci) << " -> "
+						  << static_cast<int>(charset) << std::endl;
+				if (charset != CharacterSet::Unknown) {
+					return charset;
+				}
+			}
+		}
+	}
+
+	// If no valid ECI encoding found, or no ECI at all, guess the encoding
+	std::cout << "encoding(): No valid ECI found, guessing encoding from content" << std::endl;
+	return guessEncoding();
+#else
+	return CharacterSet::ISO8859_1;
+#endif
+}
+
+void Content::addCodecMode(QRCode::CodecMode mode)
+{
+	codecModes.push_back(mode);
+}
+
+QRCode::CodecMode Content::primaryCodecMode() const
+{
+	// Return the first non-terminator, non-ECI, non-structured-append mode
+	// These are the actual data encoding modes
+	for (const auto& mode : codecModes) {
+		switch (mode) {
+			case QRCode::CodecMode::NUMERIC:
+			case QRCode::CodecMode::ALPHANUMERIC:
+			case QRCode::CodecMode::BYTE:
+			case QRCode::CodecMode::KANJI:
+			case QRCode::CodecMode::HANZI:
+				return mode;
+			default:
+				continue; // Skip control modes
+		}
+	}
+	
+	// If no data mode found, return the first mode or TERMINATOR if empty
+	if (!codecModes.empty()) {
+		return codecModes.front();
+	}
+	
+	return QRCode::CodecMode::TERMINATOR; // Default fallback
 }
 
 } // namespace ZXing

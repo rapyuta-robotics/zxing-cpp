@@ -253,12 +253,14 @@ DecoderResult DecodeBitStream(ByteArray&& bytes, const Version& version, ErrorCo
 			case CodecMode::FNC1_FIRST_POSITION:
 //				if (!result.empty()) // uncomment to enforce specification
 //					throw FormatError("GS1 Indicator (FNC1 in first position) at illegal position");
+				result.addCodecMode(mode); // Store the codec mode
 				result.symbology.modifier = '3';
 				result.symbology.aiFlag = AIFlag::GS1; // In Alphanumeric mode undouble doubled '%' and treat single '%' as <GS>
 				break;
 			case CodecMode::FNC1_SECOND_POSITION:
 				if (!result.empty())
 					throw FormatError("AIM Application Indicator (FNC1 in second position) at illegal position");
+				result.addCodecMode(mode); // Store the codec mode
 				result.symbology.modifier = '5'; // As above
 				// ISO/IEC 18004:2015 7.4.8.3 AIM Application Indicator (FNC1 in second position), "00-99" or "A-Za-z"
 				if (int appInd = bits.readBits(8); appInd < 100) // "00-09"
@@ -272,6 +274,7 @@ DecoderResult DecodeBitStream(ByteArray&& bytes, const Version& version, ErrorCo
 			case CodecMode::STRUCTURED_APPEND:
 				// sequence number and parity is added later to the result metadata
 				// Read next 4 bits of index, 4 bits of symbol count, and 8 bits of parity data, then continue
+				result.addCodecMode(mode); // Store the codec mode
 				structuredAppend.index = bits.readBits(4);
 				structuredAppend.count = bits.readBits(4) + 1;
 				structuredAppend.id    = std::to_string(bits.readBits(8));
@@ -280,11 +283,13 @@ DecoderResult DecodeBitStream(ByteArray&& bytes, const Version& version, ErrorCo
 				if (version.isModel1())
 					throw FormatError("QRCode Model 1 does not support ECI");
 				// Count doesn't apply to ECI
+				result.addCodecMode(mode); // Store the codec mode
 				result.switchEncoding(ParseECIValue(bits));
 				break;
 			case CodecMode::HANZI: {
 				// First handle Hanzi mode which does not start with character count
 				// chinese mode contains a sub set indicator right after mode indicator
+				result.addCodecMode(mode); // Store the codec mode
 				if (int subset = bits.readBits(4); subset != 1) // GB2312_SUBSET is the only supported one right now
 					throw FormatError("Unsupported HANZI subset");
 				int count = bits.readBits(CharacterCountBits(mode, version));
@@ -295,6 +300,7 @@ DecoderResult DecodeBitStream(ByteArray&& bytes, const Version& version, ErrorCo
 				// "Normal" QR code modes:
 				// How many characters will follow, encoded in this mode?
 				int count = bits.readBits(CharacterCountBits(mode, version));
+				result.addCodecMode(mode); // Store the codec mode
 				switch (mode) {
 				case CodecMode::NUMERIC:      DecodeNumericSegment(bits, count, result); break;
 				case CodecMode::ALPHANUMERIC: DecodeAlphanumericSegment(bits, count, result); break;
