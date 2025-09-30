@@ -1,6 +1,6 @@
 /*
  * Copyright 2022 Axel Waggershauser
- */
+*/
 // SPDX-License-Identifier: Apache-2.0
 
 #include "Content.h"
@@ -12,8 +12,6 @@
 #include "Utf.h"
 #include "ZXAlgorithms.h"
 #include "qrcode/QRCodecMode.h"
-
-#include <iostream> //TODO remove this
 
 #if !defined(ZXING_READERS) && !defined(ZXING_WRITERS)
 #include "Version.h"
@@ -142,7 +140,7 @@ std::string Content::render(bool withECI) const
 
 	return res;
 #else
-	// TODO: replace by proper construction from encoded data from within zint
+	//TODO: replace by proper construction from encoded data from within zint
 	return std::string(bytes.asString());
 #endif
 }
@@ -227,7 +225,7 @@ CharacterSet Content::guessEncoding() const
 
 ContentType Content::type() const
 {
-#if 1 // def ZXING_READERS
+#if 1 //def ZXING_READERS
 	if (empty())
 		return ContentType::Text;
 
@@ -259,7 +257,7 @@ ContentType Content::type() const
 
 	return ContentType::Mixed;
 #else
-	// TODO: replace by proper construction from encoded data from within zint
+	//TODO: replace by proper construction from encoded data from within zint
 	return ContentType::Text;
 #endif
 }
