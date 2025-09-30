@@ -273,8 +273,6 @@ CharacterSet Content::encoding() const
 		for (const auto& enc : encodings) {
 			if (enc.eci != ECI::Unknown) {
 				auto charset = ToCharacterSet(enc.eci);
-				std::cout << "encoding(): Using defined ECI encoding: " << static_cast<int>(enc.eci) << " -> "
-						  << static_cast<int>(charset) << std::endl;
 				if (charset != CharacterSet::Unknown) {
 					return charset;
 				}
@@ -301,22 +299,20 @@ QRCode::CodecMode Content::primaryCodecMode() const
 	// These are the actual data encoding modes
 	for (const auto& mode : codecModes) {
 		switch (mode) {
-			case QRCode::CodecMode::NUMERIC:
-			case QRCode::CodecMode::ALPHANUMERIC:
-			case QRCode::CodecMode::BYTE:
-			case QRCode::CodecMode::KANJI:
-			case QRCode::CodecMode::HANZI:
-				return mode;
-			default:
-				continue; // Skip control modes
+		case QRCode::CodecMode::NUMERIC:
+		case QRCode::CodecMode::ALPHANUMERIC:
+		case QRCode::CodecMode::BYTE:
+		case QRCode::CodecMode::KANJI:
+		case QRCode::CodecMode::HANZI: return mode;
+		default: continue; // Skip control modes
 		}
 	}
-	
+
 	// If no data mode found, return the first mode or TERMINATOR if empty
 	if (!codecModes.empty()) {
 		return codecModes.front();
 	}
-	
+
 	return QRCode::CodecMode::TERMINATOR; // Default fallback
 }
 
