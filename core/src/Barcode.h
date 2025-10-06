@@ -122,9 +122,9 @@ public:
 	bool hasECI() const;
 
 	/**
-	 * @brief primaryCodecMode returns the primary codec mode for QR codes (NUMERIC, ALPHANUMERIC, BYTE, etc.)
+	 * @brief getCodecMode returns the primary codec mode for QR codes (NUMERIC, ALPHANUMERIC, BYTE, etc.)
 	 */
-	QRCode::CodecMode primaryCodecMode() const;
+	QRCode::CodecMode getCodecMode() const;
 
 	const Position& position() const { return _position; }
 	void setPosition(Position pos) { _position = pos; }

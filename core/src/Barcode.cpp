@@ -143,9 +143,9 @@ std::string Result::encoding() const
 	return ToString(_content.encoding());
 }
 
-QRCode::CodecMode Result::primaryCodecMode() const
+QRCode::CodecMode Result::getCodecMode() const
 {
-	return _content.primaryCodecMode();
+	return _content.getCodecMode();
 }
 
 Result& Result::setReaderOptions(const ReaderOptions& opts)

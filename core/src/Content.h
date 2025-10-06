@@ -68,8 +68,7 @@ public:
 	void switchEncoding(CharacterSet cs);
 
 	void addCodecMode(QRCode::CodecMode mode); // Add a codec mode
-	QRCode::CodecMode primaryCodecMode() const; // Get the primary/most significant codec mode
-	const std::vector<QRCode::CodecMode>& getCodecModes() const { return codecModes; } // Get all codec modes
+	QRCode::CodecMode getCodecMode() const; // Get the primary/most significant codec mode
 
 	void reserve(int count) { bytes.reserve(bytes.size() + count); }
 

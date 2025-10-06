@@ -279,7 +279,6 @@ CharacterSet Content::encoding() const
 	}
 
 	// If no valid ECI encoding found, or no ECI at all, guess the encoding
-	std::cout << "encoding(): No valid ECI found, guessing encoding from content" << std::endl;
 	return guessEncoding();
 #else
 	return CharacterSet::ISO8859_1;
@@ -291,7 +290,7 @@ void Content::addCodecMode(QRCode::CodecMode mode)
 	codecModes.push_back(mode);
 }
 
-QRCode::CodecMode Content::primaryCodecMode() const
+QRCode::CodecMode Content::getCodecMode() const
 {
 	// Return the first non-terminator, non-ECI, non-structured-append mode
 	// These are the actual data encoding modes
@@ -301,8 +300,10 @@ QRCode::CodecMode Content::primaryCodecMode() const
 		case QRCode::CodecMode::ALPHANUMERIC:
 		case QRCode::CodecMode::BYTE:
 		case QRCode::CodecMode::KANJI:
-		case QRCode::CodecMode::HANZI: return mode;
-		default: continue; // Skip control modes
+		case QRCode::CodecMode::HANZI: 
+			return mode;
+		default: 
+			continue; // Skip control modes
 		}
 	}
 
