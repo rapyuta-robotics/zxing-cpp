@@ -249,6 +249,8 @@ DecoderResult DecodeBitStream(ByteArray&& bytes, const Version& version, ErrorCo
 			else
 				mode = CodecModeForBits(bits.readBits(modeBitLength), version.type());
 
+			result.addCodecMode(mode); // Store the codec mode
+
 			switch (mode) {
 			case CodecMode::FNC1_FIRST_POSITION:
 //				if (!result.empty()) // uncomment to enforce specification

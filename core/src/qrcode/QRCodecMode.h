@@ -56,4 +56,10 @@ int CodecModeBitsLength(const Version& version);
  */
 int TerminatorBitsLength(const Version& version);
 
+/**
+ * @param mode codec mode to convert
+ * @return string representation of the codec mode
+ */
+const char* ToString(CodecMode mode);
+
 } // namespace ZXing::QRCode

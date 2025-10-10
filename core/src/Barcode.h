@@ -15,6 +15,7 @@
 #include "ImageView.h"
 #include "Quadrilateral.h"
 #include "StructuredAppend.h"
+#include "qrcode/QRCodecMode.h"
 
 #ifdef ZXING_EXPERIMENTAL_API
 #include <memory>
@@ -120,6 +121,11 @@ public:
 	 */
 	bool hasECI() const;
 
+	/**
+	 * @brief getCodecMode returns the primary codec mode for QR codes (NUMERIC, ALPHANUMERIC, BYTE, etc.)
+	 */
+	QRCode::CodecMode getCodecMode() const;
+
 	const Position& position() const { return _position; }
 	void setPosition(Position pos) { _position = pos; }
 
@@ -184,6 +190,11 @@ public:
 	 */
 	std::string version() const;
 
+	/**
+	 * @brief encoding Output the encoding of the decoded text
+	 */
+	std::string encoding() const;
+
 #ifdef ZXING_EXPERIMENTAL_API
 	void symbol(BitMatrix&& bits);
 	ImageView symbol() const;
@@ -227,4 +238,4 @@ Barcode MergeStructuredAppendSequence(const Barcodes& results);
  */
 Barcodes MergeStructuredAppendSequences(const Barcodes& barcodes);
 
-} // ZXing
+} // namespace ZXing

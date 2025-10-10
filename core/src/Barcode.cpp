@@ -138,6 +138,16 @@ std::string Result::version() const
 	return _version;
 }
 
+std::string Result::encoding() const
+{
+	return ToString(_content.encoding());
+}
+
+QRCode::CodecMode Result::getCodecMode() const
+{
+	return _content.getCodecMode();
+}
+
 Result& Result::setReaderOptions(const ReaderOptions& opts)
 {
 	if (opts.characterSet() != CharacterSet::Unknown)
